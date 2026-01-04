@@ -464,9 +464,9 @@ nav {
 
 /* Projects Section */
 .projects-grid {
-    /* Changed from 400px to 280px to fit mobile screens */
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    /* Changed to explicitly force 2 columns */
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
     max-width: 1200px;
     margin: 0 auto;
@@ -1098,5 +1098,10 @@ footer {
 
     .education-icon, .formation-icon {
         margin: 0 auto; /* Center icon */
+    }
+
+    .projects-grid {
+        /* Forces 1 column on mobile devices */
+        grid-template-columns: 1fr;
     }
 }
