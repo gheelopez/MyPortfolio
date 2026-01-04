@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import emailjs from '@emailjs/browser'; // Import EmailJS
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -7,10 +8,34 @@ const Contact = () => {
     message: ''
   });
 
+  // State for loading/success/error feedback
+  const [status, setStatus] = useState('');
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const mailtoLink = `mailto:lopez.gheekaye@gmail.com?subject=Message from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(formData.message)}%0A%0AFrom: ${encodeURIComponent(formData.email)}`;
-    window.location.href = mailtoLink;
+    setStatus('sending');
+
+    // Replace these with your actual EmailJS credentials
+    const serviceID = 'service_y0tfsmf';
+    const templateID = 'template_gtzw55d';
+    const publicKey = 'MaieSpsRffjAaGSTe';
+
+    // Create the object matching your EmailJS template variables
+    const templateParams = {
+      name: formData.name,
+      email: formData.email,
+      message: formData.message,
+    };
+
+    emailjs.send(serviceID, templateID, templateParams, publicKey)
+      .then((response) => {
+        console.log('SUCCESS!', response.status, response.text);
+        setStatus('success');
+        setFormData({ name: '', email: '', message: '' }); // Clear form
+      }, (err) => {
+        console.log('FAILED...', err);
+        setStatus('error');
+      });
   };
 
   const handleChange = (e) => {
@@ -99,6 +124,7 @@ const Contact = () => {
               onChange={handleChange}
               required
               className="form-input"
+              disabled={status === 'sending'}
             />
           </div>
           <div className="form-group">
@@ -110,6 +136,7 @@ const Contact = () => {
               onChange={handleChange}
               required
               className="form-input"
+              disabled={status === 'sending'}
             />
           </div>
           <div className="form-group">
@@ -121,9 +148,15 @@ const Contact = () => {
               required
               className="form-textarea"
               rows="3"
+              disabled={status === 'sending'}
             />
           </div>
-          <button type="submit" className="form-submit">Send Message</button>
+          <button type="submit" className="form-submit" disabled={status === 'sending'}>
+            {status === 'sending' ? 'Sending...' : 'Send Message'}
+          </button>
+          
+          {status === 'success' && <p style={{color: '#00cc6a', marginTop: '10px'}}>Message sent successfully!</p>}
+          {status === 'error' && <p style={{color: '#ff6b6b', marginTop: '10px'}}>Failed to send message. Please try again.</p>}
         </form>
       </div>
     </section>
